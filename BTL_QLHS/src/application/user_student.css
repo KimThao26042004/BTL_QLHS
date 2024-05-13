@@ -1,0 +1,126 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+*{
+	-fx-font-size : 16px;
+	-fx-font-family : "Tahoma";
+}
+.school{
+	-fx-font-size : 30px;
+	-fx-text-fill : #fff;
+}
+.school:hover, .top_label:hover, .top_label_2:hover{
+	-fx-cursor : hand;
+}
+.top_scene{
+	-fx-background-color : #6E071A;
+}
+.top_label{
+	-fx-text-fill : #fff;
+}
+.top_label_2{
+	-fx-text-fill : yellow;
+}
+.left_scene{
+	-fx-background-color : #bfbfbf;
+}
+.left_btn{
+	-fx-background-color : #ba0f2e;
+	-fx-alignment : center-left;
+	-fx-cursor : hand;
+	-fx-text-fill : #fff;
+}
+.left_btn:hover{
+	-fx-background-color : #6E071A;
+}
+.right_btn{
+	-fx-background-color : #ba0f2e;
+	-fx-alignment : center;
+	-fx-background-radius : 5px;
+	-fx-text-fill : #fff;
+}
+.right_btn:hover{
+	-fx-background-color : #ba0f2e;
+}
+.home_btn{
+	-fx-border-color : #ba0f2e;
+	-fx-background-radius : 5px;
+	-fx-border-radius: 5px;
+	-fx-alignment : bottom-center;
+	-fx-text-fill : #ba0f2e;
+}
+.home_btn:hover{
+	-fx-background-color : #ba0f2e;
+	-fx-background-radius : 5px;
+	-fx-text-fill : #fff;	
+	-fx-cursor : hand;
+}
+.home_icon{
+	-fx-cursor : hand;
+}
+.choose_btn{
+	-fx-background-radius : 5px;
+	-fx-alignment : center;
+	-fx-cursor : hand;
+}
+.choose_btn:hover{
+	-fx-background-color : #ba0f2e;
+	-fx-background-radius : 5px;	
+}
+.change_pass_btn{
+	-fx-background-color : #ba0f2e;
+	-fx-alignment : center-left;
+	-fx-cursor : hand;
+	-fx-text-fill : #fff;
+	-fx-alignment :center;
+	-fx-cursor : hand;
+}
+.change_pass_btn:hover{
+	-fx-background-color :#6E071A;
+}
+.changePass_label{
+	-fx-text-fill : #ba0f2e;
+	-fx-font-weight : bold;
+	-fx-font-size : 30px;
+}
+.textfield{
+	-fx-background-color : linear-gradient(to bottom, #cfcbcb, #eee);
+	-fx-border-color : #ba0f2e;
+	-fx-background-radius : 5px;
+	-fx-border-radius: 5px;
+}
+
+.textfield:focused{
+	-fx-border-color : #fff;
+	-fx-background-color : #fff;
+}
+.table-view{
+	-fx-background-color : transparent;
+	-fx-border-color : #ba0f2e;
+	-fx-background-radius : 8px;
+	-fx-border-radius: 8px;
+	-fx-padding : 0px;
+	-fx-background-insets : 0 0 0 0;
+}
+.table-view .column-header-background{
+	-fx-background-color : #ba0f2e;
+	-fx-background-radius : 8px 8px 0px 0px;
+}
+.table-view .column-header , .filter{
+	-fx-background-color : transparent;
+}
+.table-view .column-header , .label{
+	-fx-text-fill : #fff;
+}
+.infor_label{
+	-fx-text-fill : #ba0f2e;
+	-fx-font-weight : bold;
+}
+.combo-box{
+		-fx-background-color : transparent;
+	-fx-border-color : #ba0f2e;
+	-fx-background-radius : 8px;
+	-fx-border-radius: 8px;
+}
+.sign_out{
+	-fx-cursor : hand;
+	-fx-text-fill : #000;
+}
