@@ -6,6 +6,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import java.text.DecimalFormat;
 public class dashboardController implements Initializable {
 
     @FXML
@@ -104,37 +106,37 @@ public class dashboardController implements Initializable {
     private TextField addStudents_search;
 
     @FXML
-    private TableView<studentData> addStudents_tableView;
+    private TableView<StudentData> addStudents_tableView;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_studentNum;
+    private TableColumn<StudentData, String> addStudents_col_studentNum;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_year;
+    private TableColumn<StudentData, String> addStudents_col_lop;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_course;
+    private TableColumn<StudentData, String> addStudents_col_course;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_HoTen;
+    private TableColumn<StudentData, String> addStudents_col_HoTen;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_CCCD;
+    private TableColumn<StudentData, String> addStudents_col_CCCD;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_gender;
+    private TableColumn<StudentData, String> addStudents_col_gender;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_birth;
+    private TableColumn<StudentData, String> addStudents_col_birth;
 
     @FXML
-    private TableColumn<studentData, String> addStudents_col_status;
+    private TableColumn<StudentData, String> addStudents_col_status;
 
     @FXML
     private TextField addStudents_studentNum;
 
     @FXML
-    private ComboBox<?> addStudents_year;
+    private ComboBox<?> addStudents_lop;
 
     @FXML
     private ComboBox<?> addStudents_course;
@@ -210,7 +212,10 @@ public class dashboardController implements Initializable {
     private TextField studentGrade_studentNum;
 
     @FXML
-    private Label studentGrade_year;
+    private Label studentGrade_studentHoTen;
+    
+    @FXML
+    private Label studentGrade_lop;
 
     @FXML
     private Label studentGrade_course;
@@ -228,25 +233,28 @@ public class dashboardController implements Initializable {
     private Button studentGrade_clearBtn;
 
     @FXML
-    private TableView<studentData> studentGrade_tableView;
+    private TableView<StudentData> studentGrade_tableView;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_studentNum;
+    private TableColumn<StudentData, String> studentGrade_col_studentNum;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_year;
+    private TableColumn<StudentData, String> studentGrade_col_studentHoTen;
+    
+    @FXML
+    private TableColumn<StudentData, String> studentGrade_col_lop;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_course;
+    private TableColumn<StudentData, String> studentGrade_col_course;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_firstSem;
+    private TableColumn<StudentData, String> studentGrade_col_firstSem;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_secondSem;
+    private TableColumn<StudentData, String> studentGrade_col_secondSem;
 
     @FXML
-    private TableColumn<studentData, String> studentGrade_col_final;
+    private TableColumn<StudentData, String> studentGrade_col_final;
 
     @FXML
     private TextField studentGrade_search;
@@ -260,7 +268,7 @@ public class dashboardController implements Initializable {
 
     public void homeDisplayTotalEnrolledStudents() {
 
-        String sql = "SELECT COUNT(id) FROM student WHERE year = 'Năm 3' AND status = 'Đã học xong'";
+        String sql = "SELECT COUNT(id) FROM student WHERE lop = 'Lớp 12' AND status = 'Đã học xong'";
 
         connect = database.connectDb();
 
@@ -285,7 +293,7 @@ public class dashboardController implements Initializable {
 
     public void homeDisplayFemaleEnrolled() {
 
-        String sql = "SELECT COUNT(id) FROM student WHERE gender = 'Nữ' and status = 'Đã học xong'";
+        String sql = "SELECT COUNT(id) FROM student WHERE gender = 'Nữ' and status = 'Đã học xong' AND lop = 'Lớp 12'";
 
         connect = database.connectDb();
 
@@ -309,7 +317,7 @@ public class dashboardController implements Initializable {
 
     public void homeDisplayMaleEnrolled() {
 
-        String sql = "SELECT COUNT(id) FROM student WHERE gender = 'Nam' and status = 'Đã học xong'";
+        String sql = "SELECT COUNT(id) FROM student WHERE gender = 'Nam' and status = 'Đã học xong' AND lop = 'Lớp 12'";
 
         connect = database.connectDb();
 
@@ -411,7 +419,7 @@ public class dashboardController implements Initializable {
     public void addStudentsAdd() {
 
         String insertData = "INSERT INTO student "
-                + "(studentNum,year,course,HoTen,CCCD,gender,birth,status,image,date) "
+                + "(studentNum,lop,course,HoTen,CCCD,gender,birth,status,image,date) "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?)";
 
         connect = database.connectDb();
@@ -420,7 +428,7 @@ public class dashboardController implements Initializable {
             Alert alert;
 
             if (addStudents_studentNum.getText().isEmpty()
-                    || addStudents_year.getSelectionModel().getSelectedItem() == null
+                    || addStudents_lop.getSelectionModel().getSelectedItem() == null
                     || addStudents_course.getSelectionModel().getSelectedItem() == null
                     || addStudents_HoTen.getText().isEmpty()
                     || addStudents_CCCD.getText().isEmpty()
@@ -434,7 +442,6 @@ public class dashboardController implements Initializable {
                 alert.setContentText("Please fill all blank fields");
                 alert.showAndWait();
             } else {
-                // CHECK IF THE STUDENTNUMBER IS ALREADY EXIST
                 String checkData = "SELECT studentNum FROM student WHERE studentNum = '"
                         + addStudents_studentNum.getText() + "'";
 
@@ -450,7 +457,7 @@ public class dashboardController implements Initializable {
                 } else {
                     prepare = connect.prepareStatement(insertData);
                     prepare.setString(1, addStudents_studentNum.getText());
-                    prepare.setString(2, (String) addStudents_year.getSelectionModel().getSelectedItem());
+                    prepare.setString(2, (String) addStudents_lop.getSelectionModel().getSelectedItem());
                     prepare.setString(3, (String) addStudents_course.getSelectionModel().getSelectedItem());
                     prepare.setString(4, addStudents_HoTen.getText());
                     prepare.setString(5, addStudents_CCCD.getText());
@@ -469,12 +476,12 @@ public class dashboardController implements Initializable {
                     prepare.executeUpdate();
 
                     String insertStudentGrade = "INSERT INTO student_grade "
-                            + "(studentNum,year,course,first_sem,second_sem,final) "
+                            + "(studentNum,lop,course,first_sem,second_sem,final) "
                             + "VALUES(?,?,?,?,?,?)";
 
                     prepare = connect.prepareStatement(insertStudentGrade);
                     prepare.setString(1, addStudents_studentNum.getText());
-                    prepare.setString(2, (String) addStudents_year.getSelectionModel().getSelectedItem());
+                    prepare.setString(2, (String) addStudents_lop.getSelectionModel().getSelectedItem());
                     prepare.setString(3, (String) addStudents_course.getSelectionModel().getSelectedItem());
                     prepare.setString(4, "0");
                     prepare.setString(5, "0");
@@ -504,7 +511,7 @@ public class dashboardController implements Initializable {
         uri = uri.replace("\\", "\\\\");
 
         String updateData = "UPDATE student SET "
-                + "year = '" + addStudents_year.getSelectionModel().getSelectedItem()
+                + "lop = '" + addStudents_lop.getSelectionModel().getSelectedItem()
                 + "', course = '" + addStudents_course.getSelectionModel().getSelectedItem()
                 + "', HoTen = '" + addStudents_HoTen.getText()
                 + "', CCCD = '" + addStudents_CCCD.getText()
@@ -519,7 +526,7 @@ public class dashboardController implements Initializable {
         try {
             Alert alert;
             if (addStudents_studentNum.getText().isEmpty()
-                    || addStudents_year.getSelectionModel().getSelectedItem() == null
+                    || addStudents_lop.getSelectionModel().getSelectedItem() == null
                     || addStudents_course.getSelectionModel().getSelectedItem() == null
                     || addStudents_HoTen.getText().isEmpty()
                     || addStudents_CCCD.getText().isEmpty()
@@ -550,9 +557,7 @@ public class dashboardController implements Initializable {
                     alert.setContentText("Successfully Updated!");
                     alert.showAndWait();
 
-                    // TO UPDATE THE TABLEVIEW
                     addStudentsShowListData();
-                    // TO CLEAR THE FIELDS
                     addStudentsClear();
 
                 } else {
@@ -633,7 +638,7 @@ public class dashboardController implements Initializable {
 
     public void addStudentsClear() {
         addStudents_studentNum.setText("");
-        addStudents_year.getSelectionModel().clearSelection();
+        addStudents_lop.getSelectionModel().clearSelection();
         addStudents_course.getSelectionModel().clearSelection();
         addStudents_HoTen.setText("");
         addStudents_CCCD.setText("");
@@ -661,7 +666,7 @@ public class dashboardController implements Initializable {
             getData.path = file.getAbsolutePath();
 
         }
-    } //WHILE WE INSERT THE DATA ON STUDENT, WE SHOULD INSERT ALSO THE DATA TO STUDENT_GRADE
+    } //
 
 /*    public void addStudentsSearch() {
 
@@ -707,7 +712,7 @@ public class dashboardController implements Initializable {
     }*/
     
     public void addStudentsSearch() {
-        FilteredList<studentData> filter = new FilteredList<>(addStudentsListD, e -> true);
+        FilteredList<StudentData> filter = new FilteredList<>(addStudentsListD, e -> true);
 
         addStudents_search.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
@@ -720,7 +725,7 @@ public class dashboardController implements Initializable {
 
                     if (Long.toString(predicateStudentData.getStudentNum()).contains(newValue)) {
                         return true;
-                    } else if (predicateStudentData.getYear().toLowerCase().contains(newValue)) {
+                    } else if (predicateStudentData.getLop().toLowerCase().contains(newValue)) {
                         return true;
                     } else if (predicateStudentData.getCourse().toLowerCase().contains(newValue)) {
                         return true;
@@ -741,24 +746,24 @@ public class dashboardController implements Initializable {
             }
         });
 
-        SortedList<studentData> sortList = new SortedList<>(filter);
+        SortedList<StudentData> sortList = new SortedList<>(filter);
         sortList.comparatorProperty().bind(addStudents_tableView.comparatorProperty());
         addStudents_tableView.setItems(sortList);
     }
 
 
-    private String[] yearList = {"Năm 1", "Năm 2", "Năm 3"};
+    private String[] lopList = {"Lớp 10", "Lớp 11", "Lớp 12"};
 
-    public void addStudentsYearList() {
+    public void addStudentslopList() {
 
-        List<String> yearL = new ArrayList<>();
+        List<String> lopL = new ArrayList<>();
 
-        for (String data : yearList) {
-            yearL.add(data);
+        for (String data : lopList) {
+            lopL.add(data);
         }
 
-        ObservableList ObList = FXCollections.observableArrayList(yearL);
-        addStudents_year.setItems(ObList);
+        ObservableList ObList = FXCollections.observableArrayList(lopL);
+        addStudents_lop.setItems(ObList);
 
     }
 
@@ -812,22 +817,22 @@ public class dashboardController implements Initializable {
         addStudents_status.setItems(ObList);
     }
 
-    public ObservableList<studentData> addStudentsListData() {
+    public ObservableList<StudentData> addStudentsListData() {
 
-        ObservableList<studentData> listStudents = FXCollections.observableArrayList();
+        ObservableList<StudentData> listStudents = FXCollections.observableArrayList();
 
         String sql = "SELECT * FROM student";
 
         connect = database.connectDb();
 
         try {
-            studentData studentD;
+            StudentData studentD;
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
 
             while (result.next()) {
-                studentD = new studentData(result.getInt("studentNum"),
-                        result.getString("year"),
+            	studentD = new StudentData(result.getLong("studentNum"),
+                        result.getString("lop"),
                         result.getString("course"),
                         result.getString("HoTen"),
                         result.getString("CCCD"),
@@ -845,13 +850,13 @@ public class dashboardController implements Initializable {
         return listStudents;
     }
 
-    private ObservableList<studentData> addStudentsListD;
+    private ObservableList<StudentData> addStudentsListD;
 
     public void addStudentsShowListData() {
         addStudentsListD = addStudentsListData();
 
         addStudents_col_studentNum.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
-        addStudents_col_year.setCellValueFactory(new PropertyValueFactory<>("year"));
+        addStudents_col_lop.setCellValueFactory(new PropertyValueFactory<>("lop"));
         addStudents_col_course.setCellValueFactory(new PropertyValueFactory<>("course"));
         addStudents_col_HoTen.setCellValueFactory(new PropertyValueFactory<>("HoTen"));
         addStudents_col_CCCD.setCellValueFactory(new PropertyValueFactory<>("CCCD"));
@@ -865,7 +870,7 @@ public class dashboardController implements Initializable {
 
     public void addStudentsSelect() {
 
-        studentData studentD = addStudents_tableView.getSelectionModel().getSelectedItem();
+        StudentData studentD = addStudents_tableView.getSelectionModel().getSelectedItem();
         int num = addStudents_tableView.getSelectionModel().getSelectedIndex();
 
         if ((num - 1) < -1) {
@@ -903,7 +908,6 @@ public class dashboardController implements Initializable {
                 alert.setContentText("Please fill all blank fields");
                 alert.showAndWait();
             } else {
-//            CHECK IF THE COURSE YOU WANT TO INSERT IS ALREADY EXIST!
                 String checkData = "SELECT course FROM course WHERE course = '"
                         + availableCourse_course.getText() + "'";
 
@@ -929,9 +933,8 @@ public class dashboardController implements Initializable {
                     alert.setContentText("Successfully Added!");
                     alert.showAndWait();
 
-                    // TO BECOME UPDATED OUR TABLEVIEW ONCE THE DATA WE GAVE SUCCESSFUL
                     availableCourseShowListData();
-                    // TO CLEAR THE TEXT FIELDS
+                    
                     availableCourseClear();
 
                 }
@@ -1096,143 +1099,59 @@ public class dashboardController implements Initializable {
 
     }
 
-/*    public void studentGradesUpdate() {
-        double finalCheck1 = 0;
-        double finalCheck2 = 0;
 
-        String checkData = "SELECT * FROM student_grade WHERE studentNum = '"
-                + studentGrade_studentNum.getText() + "'";
-
-        connect = database.connectDb();
-
-        double finalResult = 0;
-
-        try {
-
-            prepare = connect.prepareStatement(checkData);
-            result = prepare.executeQuery();
-
-            if (result.next()) {
-                finalCheck1 = result.getDouble("first_sem");
-                finalCheck2 = result.getDouble("second_sem");
-            }
-
-            if (finalCheck1 == 0 || finalCheck2 == 0) {
-                finalResult = 0;
-            } else { 
-                finalResult = (Double.parseDouble(studentGrade_firstSem.getText())
-                        + Double.parseDouble(studentGrade_secondSem.getText()) / 2);
-            }
-
-            String updateData = "UPDATE student_grade SET "
-                    + " year = '" + studentGrade_year.getText()
-                    + "', course = '" + studentGrade_course.getText()
-                    + "', first_sem = '" + studentGrade_firstSem.getText()
-                    + "', second_sem = '" + studentGrade_secondSem.getText()
-                    + "', final = '" + finalResult + "' WHERE studentNum = '"
-                    + studentGrade_studentNum.getText() + "'";
-
-            Alert alert;
-
-            if (studentGrade_studentNum.getText().isEmpty()
-                    || studentGrade_year.getText().isEmpty()
-                    || studentGrade_course.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
-
-            } else {
-
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Confirmation Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to UPDATE Student #" + studentGrade_studentNum.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
-                    statement = connect.createStatement();
-                    statement.executeUpdate(updateData);
-
-                    alert = new Alert(AlertType.INFORMATION);
-                    alert.setTitle("Information Message");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Successfully Updated!");
-                    alert.showAndWait();
-
-                    studentGradesShowListData();
-                } else {
-                    return;
-                }
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-*/
     
     public void studentGradesUpdate() {
-        double finalCheck1 = 0;
-        double finalCheck2 = 0;
-
-        // Câu truy vấn để lấy điểm hiện tại của học sinh
-        String checkData = "SELECT * FROM student_grade WHERE studentNum = '"
-                + studentGrade_studentNum.getText() + "'";
-
-        connect = database.connectDb();
-
         double finalResult = 0;
 
-        try {
-            prepare = connect.prepareStatement(checkData);
-            result = prepare.executeQuery();
+        // Lấy thông tin điểm nhập vào từ học kỳ một và học kỳ hai
+        double firstSemGrade = Double.parseDouble(studentGrade_firstSem.getText());
+        double secondSemGrade = Double.parseDouble(studentGrade_secondSem.getText());
 
-            // Lấy điểm học kỳ đầu và học kỳ hai từ kết quả truy vấn
-            if (result.next()) {
-                finalCheck1 = result.getDouble("first_sem");
-                finalCheck2 = result.getDouble("second_sem");
-            }
+        // Kiểm tra điểm nhập vào phải từ 0 đến 10
+        if (firstSemGrade < 0 || firstSemGrade > 10 || secondSemGrade < 0 || secondSemGrade > 10) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Grades must be between 0 and 10.");
+            alert.showAndWait();
+            return; // Kết thúc phương thức nếu có lỗi
+        }
 
-            // Tính toán kết quả cuối cùng dựa trên công thức mới
-            if (finalCheck1 == 0 || finalCheck2 == 0) {
-                finalResult = 0;
-            } else { 
-                finalResult = (Double.parseDouble(studentGrade_firstSem.getText())
-                               + 2 * Double.parseDouble(studentGrade_secondSem.getText())) / 3;
-            }
+        // Tính toán kết quả cuối cùng dựa trên công thức mới
+        if (firstSemGrade != 0 && secondSemGrade != 0) {
+            finalResult = (firstSemGrade + 2 * secondSemGrade) / 3;
+        }
 
-            // Câu truy vấn cập nhật thông tin điểm của học sinh
-            String updateData = "UPDATE student_grade SET "
-                    + " year = '" + studentGrade_year.getText()
-                    + "', course = '" + studentGrade_course.getText()
-                    + "', first_sem = '" + studentGrade_firstSem.getText()
-                    + "', second_sem = '" + studentGrade_secondSem.getText()
-                    + "', final = '" + finalResult + "' WHERE studentNum = '"
-                    + studentGrade_studentNum.getText() + "'";
+        // Câu truy vấn cập nhật thông tin điểm của học sinh
+        String updateData = "UPDATE student_grade SET "
+                + "first_sem = '" + firstSemGrade + "', "
+                + "second_sem = '" + secondSemGrade + "', "
+                + "final = '" + finalResult + "' WHERE studentNum = '"
+                + studentGrade_studentNum.getText() + "'";
 
-            Alert alert;
+        Alert alert;
 
-            // Kiểm tra các trường nhập liệu
-            if (studentGrade_studentNum.getText().isEmpty()
-                    || studentGrade_year.getText().isEmpty()
-                    || studentGrade_course.getText().isEmpty()) {
-                alert = new Alert(AlertType.ERROR);
-                alert.setTitle("Error Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Please fill all blank fields");
-                alert.showAndWait();
+        // Kiểm tra các trường nhập liệu
+        if (studentGrade_studentNum.getText().isEmpty()
+                || studentGrade_lop.getText().isEmpty()
+                || studentGrade_course.getText().isEmpty()) {
+            alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Please fill all blank fields");
+            alert.showAndWait();
+        } else {
+            // Hiển thị hộp thoại xác nhận cập nhật
+            alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Confirmation Message");
+            alert.setHeaderText(null);
+            alert.setContentText("Are you sure you want to UPDATE Student #" + studentGrade_studentNum.getText() + "?");
+            Optional<ButtonType> option = alert.showAndWait();
 
-            } else {
-                // Hiển thị hộp thoại xác nhận cập nhật
-                alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Confirmation Message");
-                alert.setHeaderText(null);
-                alert.setContentText("Are you sure you want to UPDATE Student #" + studentGrade_studentNum.getText() + "?");
-                Optional<ButtonType> option = alert.showAndWait();
-
-                if (option.get().equals(ButtonType.OK)) {
+            if (option.isPresent() && option.get().equals(ButtonType.OK)) {
+                try {
+                    connect = database.connectDb();
                     statement = connect.createStatement();
                     statement.executeUpdate(updateData);
 
@@ -1244,45 +1163,62 @@ public class dashboardController implements Initializable {
 
                     // Làm mới danh sách dữ liệu hiển thị
                     studentGradesShowListData();
-                } else {
-                    return;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        if (statement != null) statement.close();
+                        if (connect != null) connect.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
+
+
 
     
     public void studentGradesClear() {
         studentGrade_studentNum.setText("");
-        studentGrade_year.setText("");
+        studentGrade_studentHoTen.setText("");
+        studentGrade_lop.setText("");
         studentGrade_course.setText("");
         studentGrade_firstSem.setText("");
         studentGrade_secondSem.setText("");
     }
 
-    public ObservableList<studentData> studentGradesListData() {
+    public ObservableList<StudentData> studentGradesListData() {
 
-        ObservableList<studentData> listData = FXCollections.observableArrayList();
+        ObservableList<StudentData> listData = FXCollections.observableArrayList();
 
-        String sql = "SELECT * FROM student_grade";
+        String sql = "SELECT sg.studentNum, s.HoTen, sg.lop, sg.course, sg.first_sem, sg.second_sem, sg.final " +
+                "FROM student_grade sg " +
+                "JOIN student s ON sg.studentNum = s.studentNum";
 
         connect = database.connectDb();
 
         try {
-            studentData studentD;
+            StudentData studentD;
 
             prepare = connect.prepareStatement(sql);
             result = prepare.executeQuery();
 
+            DecimalFormat df = new DecimalFormat("#.##");
+            
             while (result.next()) {
-                studentD = new studentData(result.getInt("studentNum"),
-                         result.getString("year"),
-                         result.getString("course"),
-                         result.getDouble("first_sem"),
-                         result.getDouble("second_sem"),
-                         result.getDouble("final"));
+                studentD = new StudentData(result.getLong("studentNum"),
+                        result.getString("HoTen"),
+                        result.getString("lop"),
+                        result.getString("course"));
+
+                StudentGrade studentGrade = new StudentGrade(
+                        Double.parseDouble(df.format(result.getDouble("first_sem"))),
+                        Double.parseDouble(df.format(result.getDouble("second_sem"))),
+                        Double.parseDouble(df.format(result.getDouble("final"))));
+
+                studentD.setStudentGrade(studentGrade);
 
                 listData.add(studentD);
             }
@@ -1292,13 +1228,15 @@ public class dashboardController implements Initializable {
         return listData;
     }
 
-    private ObservableList<studentData> studentGradesList;
+
+    private ObservableList<StudentData> studentGradesList;
 
     public void studentGradesShowListData() {
         studentGradesList = studentGradesListData();
 
         studentGrade_col_studentNum.setCellValueFactory(new PropertyValueFactory<>("studentNum"));
-        studentGrade_col_year.setCellValueFactory(new PropertyValueFactory<>("year"));
+        studentGrade_col_studentHoTen.setCellValueFactory(new PropertyValueFactory<>("HoTen"));
+        studentGrade_col_lop.setCellValueFactory(new PropertyValueFactory<>("lop"));
         studentGrade_col_course.setCellValueFactory(new PropertyValueFactory<>("course"));
         studentGrade_col_firstSem.setCellValueFactory(new PropertyValueFactory<>("firstSem"));
         studentGrade_col_secondSem.setCellValueFactory(new PropertyValueFactory<>("secondSem"));
@@ -1310,23 +1248,30 @@ public class dashboardController implements Initializable {
 
     public void studentGradesSelect() {
 
-        studentData studentD = studentGrade_tableView.getSelectionModel().getSelectedItem();
+        StudentData studentD = studentGrade_tableView.getSelectionModel().getSelectedItem();
         int num = studentGrade_tableView.getSelectionModel().getSelectedIndex();
 
-        if ((num - 1) < -1) {
-            return;
+        if (num < 0) {
+            return; 
         }
 
         studentGrade_studentNum.setText(String.valueOf(studentD.getStudentNum()));
-        studentGrade_year.setText(studentD.getYear());
+        studentGrade_studentHoTen.setText(String.valueOf(studentD.getHoTen()));
+        studentGrade_lop.setText(studentD.getLop());
         studentGrade_course.setText(studentD.getCourse());
-        studentGrade_firstSem.setText(String.valueOf(studentD.getFirstSem()));
-        studentGrade_secondSem.setText(String.valueOf(studentD.getSecondSem()));
+
+        StudentGrade studentGrade = studentD.getStudentGrade();
+        if (studentGrade != null) { 
+            studentGrade_firstSem.setText(String.valueOf(studentGrade.getFirstSem()));
+            studentGrade_secondSem.setText(String.valueOf(studentGrade.getSecondSem()));
+        } else {
+        }
     }
+
 
     public void studentGradesSearch() {
         // Tạo FilteredList từ studentGradesList
-        FilteredList<studentData> filter = new FilteredList<>(studentGradesList, e -> true);
+        FilteredList<StudentData> filter = new FilteredList<>(studentGradesList, e -> true);
 
         // Thêm EventHandler cho sự kiện nhấn phím Enter bằng cách sử dụng setOnAction
         studentGrade_search.setOnAction(event -> {
@@ -1338,26 +1283,33 @@ public class dashboardController implements Initializable {
                     return true;
                 }
 
-                // Kiểm tra từng trường của đối tượng studentData
-                if (Long.toString(predicateStudentData.getStudentNum()).contains(newValue)) {
-                    return true;
-                } else if (predicateStudentData.getYear().toLowerCase().contains(newValue)) {
-                    return true;
-                } else if (predicateStudentData.getCourse().toLowerCase().contains(newValue)) {
-                    return true;
-                } else if (predicateStudentData.getFirstSem().toString().contains(newValue)) {
-                    return true;
-                } else if (predicateStudentData.getSecondSem().toString().contains(newValue)) {
-                    return true;
-                } else if (predicateStudentData.getFinals().toString().contains(newValue)) {
-                    return true;
+                // Kiểm tra từng trường của đối tượng studentData và studentGrade
+                StudentGrade studentGrade = predicateStudentData.getStudentGrade();
+                if (studentGrade != null) {
+                    if (Long.toString(predicateStudentData.getStudentNum()).contains(newValue)) {
+                        return true;
+                    }else if (predicateStudentData.getHoTen().toLowerCase().contains(newValue)) {
+                        return true;
+                    }else if (predicateStudentData.getLop().toLowerCase().contains(newValue)) {
+                        return true;
+                    } else if (predicateStudentData.getCourse().toLowerCase().contains(newValue)) {
+                        return true;
+                    } else if (studentGrade.getFirstSem().toString().contains(newValue)) {
+                        return true;
+                    } else if (studentGrade.getSecondSem().toString().contains(newValue)) {
+                        return true;
+                    } else if (studentGrade.getFinals().toString().contains(newValue)) {
+                        return true;
+                    } else {
+                        return false;
+                    }
                 } else {
                     return false;
                 }
             });
 
             // Tạo SortedList từ FilteredList
-            SortedList<studentData> sortList = new SortedList<>(filter);
+            SortedList<StudentData> sortList = new SortedList<>(filter);
 
             // Liên kết comparator của SortedList với TableView
             sortList.comparatorProperty().bind(studentGrade_tableView.comparatorProperty());
@@ -1366,6 +1318,7 @@ public class dashboardController implements Initializable {
             studentGrade_tableView.setItems(sortList);
         });
     }
+
 
 
     private double x = 0;
@@ -1428,7 +1381,7 @@ public class dashboardController implements Initializable {
     }
 
     public void defaultNav(){
-        home_btn.setStyle("-fx-background-color:linear-gradient(to bottom right, #3f82ae, #26bf7d);");
+        home_btn.setStyle("-fx-background-color:#6E071A;");
     }
     
     public void switchForm(ActionEvent event) {
@@ -1462,7 +1415,7 @@ public class dashboardController implements Initializable {
             studentGrade_btn.setStyle("-fx-background-color:#ba0f2e;");
 
             addStudentsShowListData();
-            addStudentsYearList();
+            addStudentslopList();
             addStudentsGenderList();
             addStudentsStatusList();
             addStudentsCourseList();
@@ -1520,7 +1473,7 @@ public class dashboardController implements Initializable {
         homeDisplayTotalEnrolledChart();
 
         addStudentsShowListData();
-        addStudentsYearList();
+        addStudentslopList();
         addStudentsGenderList();
         addStudentsStatusList();
         addStudentsCourseList();
